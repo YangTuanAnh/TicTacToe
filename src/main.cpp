@@ -1,103 +1,67 @@
 #include <raylib.h>
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-#include <time.h>
-#include <stdio.h>
-const int WIDTH = 800, HEIGHT = 600;
-const int SIZE = 128;
+#include "tictactoe.h"
 
-typedef enum Turn
-{
-    PLAYER = 0,
-    AI
-} Turn;
-
-int grid[3][3], mousex, mousey;
-bool gen = true, full = false, redwin = false, bluewin = false, end = false;
-
-bool isSafe()
-{
-    return mousex >= 0 && mousex < 3 && mousey >= 0 && mousey < 3;
-}
-bool checkwin(int x, int y, int turn)
-{
-    if (grid[0][x] == turn && grid[1][x] == turn && grid[2][x] == turn)
-        return true;
-    if (grid[y][0] == turn && grid[y][1] == turn && grid[y][2] == turn)
-        return true;
-    if (x == y)
-        if (grid[0][0] == turn && grid[1][1] == turn && grid[2][2] == turn)
-            return true;
-    if ((x == 0 && y == 2) || (x == 2 && y == 0))
-        if (grid[0][2] == turn && grid[1][1] == turn && grid[2][0] == turn)
-            return true;
-    return false;
-}
 int main()
 {
     InitWindow(WIDTH, HEIGHT, "TicTacToe 💖");
     SetTargetFPS(60);
-
-    Turn currTurn = PLAYER;
+    srand(time(0));
+    Program currProgram;
 
     while (!WindowShouldClose())
     {
-
-        if (gen)
+        if (currProgram.tab.gen)
         {
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
-                    grid[i][j] = 0;
-            gen = false;
+                    currProgram.tab.grid[i][j] = 0;
+            currProgram.currWin = NONE;
+            currProgram.tab.end = false;
+            currProgram.tab.filled = 0;
+            currProgram.tab.gen = false;
         }
 
-        full = true;
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
-                if (grid[i][j] == 0)
-                    full = false;
+        currProgram.tab.end = (currProgram.tab.filled == 9);
 
         Vector2 mousePos = GetMousePosition();
-        mousex = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
-        mousey = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
+        currProgram.mousex = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
+        currProgram.mousey = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
 
-        if (!end)
+        if (!currProgram.tab.end)
         {
-            if (currTurn == AI && !full)
+            if (currProgram.currTurn == AI)
             {
                 bool found = false;
-                srand(time(0));
                 while (!found)
                     for (int i = 0; i < 3 && !found; i++)
-                        for (int j = 0; j < 3; j++)
-                            if (grid[i][j] == 0 && rand() % 3 == 0)
+                        for (int j = 0; j < 3 && !found; j++)
+                            if (currProgram.tab.grid[i][j] == 0 && rand() % 3 == 0)
                             {
-                                grid[i][j] = 2;
-                                if (checkwin(j, i, 2))
-                                {
-                                    end = true;
-                                    bluewin = true;
-                                }
+                                currProgram.tab.grid[i][j] = 2;
+                                currProgram.tab.filled++;
                                 found = true;
-                                break;
+                                if (currProgram.tab.checkwin(j, i, 2))
+                                {
+                                    currProgram.tab.end = true;
+                                    currProgram.currWin = BLUEWIN;
+                                }
                             }
-                currTurn = PLAYER;
+                currProgram.currTurn = PLAYER;
             }
-            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
-                     isSafe() &&
-                     grid[mousey][mousex] == 0 &&
-                     currTurn == PLAYER)
+            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && currProgram.isSafe() && currProgram.currTurn == PLAYER)
             {
-                grid[mousey][mousex] = 1;
-                if (checkwin(mousex, mousey, 1))
+                currProgram.tab.grid[currProgram.mousey][currProgram.mousex] = 1;
+                currProgram.tab.filled++;
+                if (currProgram.tab.checkwin(currProgram.mousex, currProgram.mousey, 1))
                 {
-                    end = true;
-                    redwin = true;
+                    currProgram.tab.end = true;
+                    currProgram.currWin = REDWIN;
                 }
-                currTurn = AI;
+                currProgram.currTurn = AI;
             }
         }
-
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -105,28 +69,30 @@ int main()
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
             {
-                int posx = (WIDTH - SIZE * 3) / 2 + SIZE * j;
-                int posy = (HEIGHT - SIZE * 3) / 2 + SIZE * i;
+                int posx = (WIDTH - SIZE * 3) / 2 + SIZE * j, posy = (HEIGHT - SIZE * 3) / 2 + SIZE * i;
                 DrawRectangle(posx, posy, SIZE, SIZE, WHITE);
                 DrawRectangleLines(posx, posy, SIZE, SIZE, LIGHTGRAY);
-                if (grid[i][j] == 1)
+                if (currProgram.tab.grid[i][j] == 1)
                     DrawText("X", posx + SIZE * 3 / 8, posy + SIZE / 2, SIZE / 2, RED);
-                if (grid[i][j] == 2)
+                if (currProgram.tab.grid[i][j] == 2)
                     DrawText("O", posx + SIZE * 3 / 8, posy + SIZE / 2, SIZE / 2, BLUE);
             }
 
-        if (GuiButton({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET"))
-        {
-            gen = true;
-            redwin = false;
-            bluewin = false;
-            end = false;
-        }
+        currProgram.tab.gen = GuiButton({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET");
 
-        if (redwin)
+        switch (currProgram.currWin)
+        {
+        case REDWIN:
             DrawText("RED WINS!", 20, 20, 20, RED);
-        if (bluewin)
+            break;
+        case BLUEWIN:
             DrawText("BLUE WINS!", 20, 20, 20, BLUE);
+            break;
+        case NONE:
+            if (currProgram.tab.end)
+                DrawText("GAME TIED", 20, 20, 20, GREEN);
+            break;
+        }
         EndDrawing();
     }
     CloseWindow();
