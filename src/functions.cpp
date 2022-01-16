@@ -2,19 +2,22 @@
 
 bool Program::isSafe()
 {
-    return mousex >= 0 && mousex < 3 && mousey >= 0 && mousey < 3 && tab.grid[mousey][mousex] == ' ';
+    return posx >= 0 && posx < 3 && posy >= 0 && posy < 3 && tab.grid[posy][posx] == ' ';
 }
-bool Table::checkwin(int x, int y, char turn)
+void Program::checkwin()
 {
-    if (grid[0][x] == turn && grid[1][x] == turn && grid[2][x] == turn)
-        return true;
-    if (grid[y][0] == turn && grid[y][1] == turn && grid[y][2] == turn)
-        return true;
-    if (x == y)
-        if (grid[0][0] == turn && grid[1][1] == turn && grid[2][2] == turn)
-            return true;
-    if ((x == 0 && y == 2) || (x == 2 && y == 0))
-        if (grid[0][2] == turn && grid[1][1] == turn && grid[2][0] == turn)
-            return true;
-    return false;
+    tab.grid[posy][posx] = isPlayer ? 'X' : 'O';
+    tab.filled++;
+    isPlayer ^= 1;
+
+    if (tab.grid[0][posx] == tab.grid[1][posx] && tab.grid[0][posx] == tab.grid[2][posx])
+        win = true;
+    if (tab.grid[posy][0] == tab.grid[posy][1] && tab.grid[posy][0] == tab.grid[posy][2])
+        win = true;
+    if (posx == posy)
+        if (tab.grid[0][0] == tab.grid[1][1] && tab.grid[0][0] == tab.grid[2][2])
+            win = true;
+    if ((posx == 0 && posy == 2) || (posx == 2 && posy == 0))
+        if (tab.grid[0][2] == tab.grid[1][1] && tab.grid[0][2] == tab.grid[2][0])
+            win = true;
 }

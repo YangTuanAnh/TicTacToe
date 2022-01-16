@@ -12,56 +12,31 @@ int main()
 
     while (!WindowShouldClose())
     {
-        if (currProgram.tab.gen)
-        {
+        if (!currProgram.tab.filled)
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
                     currProgram.tab.grid[i][j] = ' ';
-            currProgram.currWin = NONE;
-            currProgram.tab.end = false;
-            currProgram.tab.filled = 0;
-            currProgram.tab.gen = false;
-        }
-
-        if (currProgram.tab.filled == 9)
-            currProgram.tab.end = true;
 
         Vector2 mousePos = GetMousePosition();
-        currProgram.mousex = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
-        currProgram.mousey = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
+        currProgram.posx = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
+        currProgram.posy = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
 
-        if (!currProgram.tab.end)
+        if (!currProgram.win && currProgram.tab.filled < 9)
         {
-            if (currProgram.currTurn == AI)
+            if (!currProgram.isPlayer)
             {
-                bool found = false;
-                while (!found)
-                    for (int i = 0; i < 3 && !found; i++)
-                        for (int j = 0; j < 3 && !found; j++)
-                            if (currProgram.tab.grid[i][j] == ' ' && rand() % 3 == 0)
-                            {
-                                currProgram.tab.grid[i][j] = 'O';
-                                currProgram.tab.filled++;
-                                found = true;
-                                if (currProgram.tab.checkwin(j, i, 'O'))
-                                {
-                                    currProgram.tab.end = true;
-                                    currProgram.currWin = BLUEWIN;
-                                }
-                            }
-                currProgram.currTurn = PLAYER;
-            }
-            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && currProgram.isSafe() && currProgram.currTurn == PLAYER)
-            {
-                currProgram.tab.grid[currProgram.mousey][currProgram.mousex] = 'X';
-                currProgram.tab.filled++;
-                if (currProgram.tab.checkwin(currProgram.mousex, currProgram.mousey, 'X'))
+                while (true)
                 {
-                    currProgram.tab.end = true;
-                    currProgram.currWin = REDWIN;
+                    currProgram.posy = rand() % 3, currProgram.posx = rand() % 3;
+                    if (currProgram.isSafe())
+                    {
+                        currProgram.checkwin();
+                        break;
+                    }
                 }
-                currProgram.currTurn = AI;
             }
+            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && currProgram.isSafe() && currProgram.isPlayer)
+                currProgram.checkwin();
         }
         BeginDrawing();
 
@@ -78,21 +53,14 @@ int main()
                          currProgram.tab.grid[i][j] == 'X' ? RED : BLUE);
             }
 
-        currProgram.tab.gen = GuiButton({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET");
+        if (GuiButton({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET"))
+            currProgram.win = currProgram.tab.filled = 0;
 
-        switch (currProgram.currWin)
-        {
-        case REDWIN:
-            DrawText("RED WINS!", 20, 20, 20, RED);
-            break;
-        case BLUEWIN:
-            DrawText("BLUE WINS!", 20, 20, 20, BLUE);
-            break;
-        case NONE:
-            if (currProgram.tab.end)
-                DrawText("GAME TIED", 20, 20, 20, GREEN);
-            break;
-        }
+        if (currProgram.win)
+            !currProgram.isPlayer ? DrawText("RED WINS", 20, 20, 20, RED) : DrawText("BLUE WINS", 20, 20, 20, BLUE);
+        else if (currProgram.tab.filled == 9)
+            DrawText("GAME TIED", 20, 20, 20, GREEN);
+
         EndDrawing();
     }
     CloseWindow();
