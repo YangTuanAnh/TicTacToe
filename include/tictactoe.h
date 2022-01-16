@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <time.h>
 #include <stdio.h>
+#include <cstring>
 const int WIDTH = 800, HEIGHT = 600, SIZE = 128;
 
 struct Table
@@ -30,3 +31,5 @@ struct Program
     bool isSafe(int, int);
     void checkwin(int, int);
 };
+
+bool button(Rectangle, const char *);

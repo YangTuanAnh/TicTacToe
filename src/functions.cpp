@@ -16,3 +16,15 @@ void Program::checkwin(int posx, int posy)
         (tab.grid[0][2] == tab.grid[1][1] && tab.grid[0][2] == tab.grid[2][0] && posx == 2 - posy))
         win = true;
 }
+bool button(Rectangle bounds, const char *text)
+{
+    Vector2 mousePoint = GetMousePosition();
+
+    bool pressed = (CheckCollisionPointRec(mousePoint, bounds) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON));
+
+    DrawRectangleRec(bounds, LIGHTGRAY);
+    DrawText(text, bounds.x + (bounds.width - bounds.height / 3 * strlen(text)) / 2,
+             bounds.y + bounds.height / 4, bounds.height / 2, GRAY);
+
+    return pressed;
+}

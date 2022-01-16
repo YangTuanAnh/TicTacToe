@@ -1,12 +1,7 @@
-#include <raylib.h>
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
 #include "tictactoe.h"
-
 int main()
 {
     Program currProgram;
-
     while (!WindowShouldClose())
     {
         Vector2 mousePos = GetMousePosition();
@@ -42,7 +37,7 @@ int main()
                 DrawText(TextFormat("%c", currProgram.tab.grid[i][j]), posx + SIZE * 3 / 8, posy + SIZE / 2, SIZE / 2, currProgram.tab.grid[i][j] == 'X' ? RED : BLUE);
             }
 
-        if (GuiButton({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET"))
+        if (button({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET"))
         {
             currProgram.win = currProgram.tab.filled = 0;
             std::fill(&currProgram.tab.grid[0][0], &currProgram.tab.grid[0][0] + 9, ' ');
