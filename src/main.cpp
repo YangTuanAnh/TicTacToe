@@ -5,21 +5,12 @@
 
 int main()
 {
-    InitWindow(WIDTH, HEIGHT, "TicTacToe 💖");
-    SetTargetFPS(60);
-    srand(time(0));
     Program currProgram;
 
     while (!WindowShouldClose())
     {
-        if (!currProgram.tab.filled)
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                    currProgram.tab.grid[i][j] = ' ';
-
         Vector2 mousePos = GetMousePosition();
-        int posx = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
-        int posy = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
+        int posx = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE, posy = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
 
         if (!currProgram.win && currProgram.tab.filled < 9)
         {
@@ -48,13 +39,14 @@ int main()
                 posx = (WIDTH - SIZE * 3) / 2 + SIZE * j, posy = (HEIGHT - SIZE * 3) / 2 + SIZE * i;
                 DrawRectangle(posx, posy, SIZE, SIZE, WHITE);
                 DrawRectangleLines(posx, posy, SIZE, SIZE, LIGHTGRAY);
-                DrawText(TextFormat("%c", currProgram.tab.grid[i][j]),
-                         posx + SIZE * 3 / 8, posy + SIZE / 2, SIZE / 2,
-                         currProgram.tab.grid[i][j] == 'X' ? RED : BLUE);
+                DrawText(TextFormat("%c", currProgram.tab.grid[i][j]), posx + SIZE * 3 / 8, posy + SIZE / 2, SIZE / 2, currProgram.tab.grid[i][j] == 'X' ? RED : BLUE);
             }
 
         if (GuiButton({(WIDTH - 100) / 2, HEIGHT - 40, 100, 20}, "RESET"))
+        {
             currProgram.win = currProgram.tab.filled = 0;
+            std::fill(&currProgram.tab.grid[0][0], &currProgram.tab.grid[0][0] + 9, ' ');
+        }
 
         if (currProgram.win)
             !currProgram.isPlayer ? DrawText("RED WINS", 20, 20, 20, RED) : DrawText("BLUE WINS", 20, 20, 20, BLUE);
