@@ -44,7 +44,7 @@ int main()
         }
 
         if (currProgram.win)
-            !currProgram.isPlayer ? DrawText("RED WINS", 20, 20, 20, RED) : DrawText("BLUE WINS", 20, 20, 20, BLUE);
+            currProgram.isPlayer ? DrawText("RED WINS", 20, 20, 20, RED) : DrawText("BLUE WINS", 20, 20, 20, BLUE);
         else if (currProgram.tab.filled == 9)
             DrawText("GAME TIED", 20, 20, 20, GREEN);
 
