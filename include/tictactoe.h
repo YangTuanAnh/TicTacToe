@@ -19,12 +19,12 @@ typedef enum Win
 
 struct Table
 {
-    int grid[3][3], filled;
+    char grid[3][3], filled;
     bool gen, end;
 
     Table() : gen(true), end(false) {}
 
-    bool checkwin(int, int, int);
+    bool checkwin(int, int, char);
 };
 struct Program
 {

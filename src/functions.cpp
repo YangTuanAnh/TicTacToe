@@ -2,9 +2,9 @@
 
 bool Program::isSafe()
 {
-    return mousex >= 0 && mousex < 3 && mousey >= 0 && mousey < 3 && !tab.grid[mousey][mousex];
+    return mousex >= 0 && mousex < 3 && mousey >= 0 && mousey < 3 && tab.grid[mousey][mousex] == ' ';
 }
-bool Table::checkwin(int x, int y, int turn)
+bool Table::checkwin(int x, int y, char turn)
 {
     if (grid[0][x] == turn && grid[1][x] == turn && grid[2][x] == turn)
         return true;
