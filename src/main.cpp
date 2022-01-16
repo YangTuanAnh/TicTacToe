@@ -18,8 +18,8 @@ int main()
                     currProgram.tab.grid[i][j] = ' ';
 
         Vector2 mousePos = GetMousePosition();
-        currProgram.posx = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
-        currProgram.posy = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
+        int posx = (mousePos.x - (WIDTH - SIZE * 3) / 2) / SIZE;
+        int posy = (mousePos.y - (HEIGHT - SIZE * 3) / 2) / SIZE;
 
         if (!currProgram.win && currProgram.tab.filled < 9)
         {
@@ -27,16 +27,16 @@ int main()
             {
                 while (true)
                 {
-                    currProgram.posy = rand() % 3, currProgram.posx = rand() % 3;
-                    if (currProgram.isSafe())
+                    posy = rand() % 3, posx = rand() % 3;
+                    if (currProgram.isSafe(posx, posy))
                     {
-                        currProgram.checkwin();
+                        currProgram.checkwin(posx, posy);
                         break;
                     }
                 }
             }
-            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && currProgram.isSafe() && currProgram.isPlayer)
-                currProgram.checkwin();
+            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && currProgram.isSafe(posx, posy) && currProgram.isPlayer)
+                currProgram.checkwin(posx, posy);
         }
         BeginDrawing();
 
@@ -45,7 +45,7 @@ int main()
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
             {
-                int posx = (WIDTH - SIZE * 3) / 2 + SIZE * j, posy = (HEIGHT - SIZE * 3) / 2 + SIZE * i;
+                posx = (WIDTH - SIZE * 3) / 2 + SIZE * j, posy = (HEIGHT - SIZE * 3) / 2 + SIZE * i;
                 DrawRectangle(posx, posy, SIZE, SIZE, WHITE);
                 DrawRectangleLines(posx, posy, SIZE, SIZE, LIGHTGRAY);
                 DrawText(TextFormat("%c", currProgram.tab.grid[i][j]),

@@ -12,13 +12,12 @@ struct Table
 };
 struct Program
 {
-    int posx, posy;
     Table tab;
     bool isPlayer;
     bool win;
 
     Program() : isPlayer(true) {}
 
-    bool isSafe();
-    void checkwin();
+    bool isSafe(int, int);
+    void checkwin(int, int);
 };

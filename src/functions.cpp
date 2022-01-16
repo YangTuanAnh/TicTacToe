@@ -1,10 +1,10 @@
 #include "tictactoe.h"
 
-bool Program::isSafe()
+bool Program::isSafe(int posx, int posy)
 {
     return posx >= 0 && posx < 3 && posy >= 0 && posy < 3 && tab.grid[posy][posx] == ' ';
 }
-void Program::checkwin()
+void Program::checkwin(int posx, int posy)
 {
     tab.grid[posy][posx] = isPlayer ? 'X' : 'O';
     tab.filled++;
